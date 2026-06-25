@@ -1,0 +1,29 @@
+{
+  "name": "gsc-obsidian-seo-pipeline",
+  "version": "1.0.0",
+  "description": "Export Google Search Console data into an Obsidian SEO knowledge base with CSV exports, Markdown reports, and AI-ready blog idea files.",
+  "private": true,
+  "packageManager": "pnpm@10.18.2",
+  "main": "dist/cli.js",
+  "scripts": {
+    "gsc:pull": "tsx src/cli.ts",
+    "gsc:analyze": "tsx src/analyze.ts",
+    "gsc:rebuild": "tsx src/rebuild.ts",
+    "gsc:verify": "tsx src/verify.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.4.7",
+    "googleapis": "^173.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
