@@ -2,6 +2,17 @@
 
 Export Google Search Console data into an Obsidian SEO knowledge base with CSV datasets, Markdown reports, and AI-ready content-idea files.
 
+![Google Search Console to Obsidian SEO pipeline](docs/assets/gsc-obsidian-seo-pipeline.png)
+
+## Overview
+
+This CLI turns Search Console exports into a repeatable SEO research workflow:
+
+- Pulls daily, range, and yearly Search Console datasets.
+- Splits branded and non-branded query performance.
+- Writes CSVs and Markdown reports directly into an Obsidian vault.
+- Builds quick-win, low-CTR, ranking, migration, cannibalization, and internal-link idea files.
+
 ## Prerequisites
 
 - Node.js 20 or newer
