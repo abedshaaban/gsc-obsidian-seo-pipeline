@@ -1,84 +1,91 @@
 # gsc-obsidian-seo-pipeline
 
-Pull multiple Google Search Console properties into one source-aware Obsidian SEO knowledge base.
+Export Google Search Console data into an Obsidian SEO knowledge base with CSV datasets, Markdown reports, and AI-ready content-idea files.
+
+## Public Safety
+
+This repository is intended to be safe to publish publicly when credentials stay outside git.
+
+- Keep `.env` local. It is ignored by `.gitignore`.
+- Keep Google service-account JSON files outside the repository. Common credential filename patterns are ignored as a backup.
+- Do not commit generated Search Console exports. `SEO/`, `data/`, `exports/`, and `reports/` are ignored in case an Obsidian vault or export folder is placed inside the repo.
+- Use `.env.example` as the only committed environment file.
+- Review `src/config/sources.ts` before publishing if source names, domains, or brand spellings are sensitive for your use case.
+
+## Prerequisites
+
+- Node.js 20 or newer
+- pnpm
+- A Google Cloud service account with read access to the Search Console properties you configure
+- An Obsidian vault path for generated reports and datasets
+
+## Setup
+
+```bash
+pnpm install
+cp .env.example .env
+```
+
+Fill in `.env`:
+
+```bash
+OBSIDIAN_VAULT_PATH=/absolute/path/to/your/obsidian-vault
+GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/google-service-account.json
+DEFAULT_LOOKBACK_DAYS=3
+```
+
+`GSC_SITE_URL` is still accepted for compatibility with older `.env` files, but `src/config/sources.ts` is the preferred place to configure Search Console properties.
 
 ## Sources
 
-Configure properties in `src/config/sources.ts`:
+Configure Search Console properties in `src/config/sources.ts`:
 
 ```ts
 export const gscSources = [
   {
-    id: "apelr",
-    label: "Apelr Main Domain",
-    siteUrl: "sc-domain:apelr.com",
+    id: "main-site",
+    label: "Main Site",
+    siteUrl: "sc-domain:example.com",
     type: "main",
     enabled: true,
-    brandQueryRegex: String.raw`\b(?:apelr|apeolr|apelor|apleor|apler|aperl|aepolar|aperol|aploer|aplore|apealor|apeoler|aplr|apoelr|apeir|apeljr|apeor|aplor|apoler)\b`,
+    brandQueryRegex: String.raw`\b(?:example|example brand)\b`,
     pageFilters: [
-      { operator: "notContains", expression: "https://blog.apelr.com/" },
+      { operator: "notContains", expression: "https://blog.example.com/" },
     ],
   },
-  // ...
 ];
 ```
 
-`--all` pulls enabled sources. The configured sources are the current
-`apelr.com` domain, `blog.apelr.com`, and the legacy `apeolr.com` domain.
-Main and blog both use the `sc-domain:apelr.com` Search Console property:
-page filters exclude the blog from the main source and select only the blog
-for the blog source.
-
-`brandQueryRegex` is applied locally and case-insensitively. Complete raw data
-is always retained; derived files prefixed with `non-branded-` exclude matching
-queries. Update the expression when another brand spelling appears.
-
 Use the exact property identifier shown in Search Console:
 
-- Domain properties use `sc-domain:apelr.com` and include all protocols and subdomains.
-- URL-prefix properties use a complete prefix such as `https://blog.apelr.com/`, including the protocol and trailing slash when that is how the property is registered.
+- Domain properties use `sc-domain:example.com` and include all protocols and subdomains.
+- URL-prefix properties use a complete prefix such as `https://blog.example.com/`, including the protocol and trailing slash when that is how the property is registered.
 
-## Environment
+`brandQueryRegex` is applied locally and case-insensitively. Complete raw data is retained, while derived files prefixed with `non-branded-` exclude matching queries.
 
-```bash
-OBSIDIAN_VAULT_PATH=/absolute/path/to/your/vault
-GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/service-account.json
-DEFAULT_LOOKBACK_DAYS=3
-```
+## Commands
 
-`GSC_SITE_URL` is still accepted for compatibility with old `.env` files, but source definitions are preferred and control pulls.
-
-The service account must have access to every selected Search Console property.
-Verify access without pulling data:
+Verify Google access without pulling data:
 
 ```bash
 pnpm run gsc:verify
 ```
 
-## Commands
+Pull Search Console data:
 
 ```bash
 pnpm run gsc:pull -- --source apelr
-pnpm run gsc:pull -- --source blog-apelr
-pnpm run gsc:pull -- --source old-domain
 pnpm run gsc:pull -- --all
 pnpm run gsc:pull -- --all --last-days 7
 pnpm run gsc:pull -- --source old-domain --from 2026-03-01 --to 2026-06-20
 pnpm run gsc:pull -- --source apelr --date 2026-06-20
-pnpm run gsc:rebuild
 ```
 
-Without `--source` or `--all`, the source defaults to `apelr`. Without date options, the command pulls the day `DEFAULT_LOOKBACK_DAYS` ago. `--last-days N` ends on that delayed date.
+Without `--source` or `--all`, the CLI defaults to the `apelr` source currently configured in this repository. If you rename sources in `src/config/sources.ts`, use your own source ids in these commands.
 
 Ranges are requested from Search Console one day at a time. Each day gets its own raw files and report, and the complete range also gets an aggregated snapshot.
 
-After every pull, the pipeline rebuilds each affected calendar year's
-source-level and combined datasets from stored daily snapshots. Re-running a
-date replaces that daily snapshot and does not duplicate it in the yearly data.
-Run `gsc:rebuild` after changing a brand regex to regenerate every stored
-yearly and combined view without calling Google.
-
-Analyze already stored daily data without calling Google:
+Analyze already stored data without calling Google:
 
 ```bash
 pnpm run gsc:analyze -- --source apelr
@@ -86,8 +93,15 @@ pnpm run gsc:analyze -- --all
 pnpm run gsc:analyze -- --from 2026-06-01 --to 2026-06-20
 ```
 
-Without date options, analysis uses the latest stored day for each selected source. `--all` includes configured sources that have stored data, including a disabled legacy source.
 Because analysis is local, it only requires `OBSIDIAN_VAULT_PATH`; Google credentials are not required.
+
+Rebuild yearly and combined datasets from stored daily snapshots:
+
+```bash
+pnpm run gsc:rebuild
+```
+
+Run `gsc:rebuild` after changing a brand regex to regenerate every stored yearly and combined view without calling Google.
 
 ## Datasets
 
@@ -102,16 +116,14 @@ Every export includes source metadata and metrics:
 
 Columns are `sourceId`, `sourceLabel`, `sourceType`, optional dimensions, `clicks`, `impressions`, `ctr`, `position`, `startDate`, and `endDate`.
 
-For every dataset containing a query, a `non-branded-*.csv` counterpart is
-written. Reports include both **Top Queries** and **Top Non-Branded Queries**.
-Low-CTR, ranking, quick-win, and blog-idea sections use non-branded queries.
+For every dataset containing a query, a `non-branded-*.csv` counterpart is written. Reports include both top queries and top non-branded queries. Low-CTR, ranking, quick-win, and blog-idea sections use non-branded queries.
 
 ## Output
 
 ```text
 SEO/GSC/
   sources/
-    apelr/
+    <source-id>/
       raw/daily/YYYY-MM-DD/
       raw/ranges/YYYY-MM-DD_to_YYYY-MM-DD/
       raw/yearly/YYYY/
@@ -119,30 +131,18 @@ SEO/GSC/
       reports/ranges/
       reports/yearly/
       ideas/
-    blog-apelr/
-      raw/
-      reports/
-      ideas/
-    old-domain/
-      raw/
-      reports/
-      ideas/
   combined/
     raw/yearly/YYYY/
     reports/
     ideas/
 ```
 
-The combined yearly folder is the pivot-ready cross-source dataset. For
-example:
+The combined yearly folder is the pivot-ready cross-source dataset:
 
 ```text
 SEO/GSC/combined/raw/yearly/2026/date-query-page.csv
 SEO/GSC/combined/raw/yearly/2026/non-branded-date-query-page.csv
 ```
-
-Use `date-query-page.csv` for time-series pivots and the non-branded version
-for discovery queries that do not contain an Apelr/Apeolr spelling.
 
 Per-source idea files:
 
@@ -150,8 +150,6 @@ Per-source idea files:
 - `quick-wins.md`
 - `low-ctr.md`
 - `ranking-5-to-20.md`
-
-Entries are deduplicated with `sourceId + query + page`.
 
 Combined idea files:
 
@@ -161,11 +159,7 @@ Combined idea files:
 - `blog-to-main-internal-links.md`
 - `cannibalization.md`
 
-The combined report compares main, blog, and legacy data. It calls out shared main/blog queries, internal-link opportunities, legacy migration candidates, low-CTR pages, ranking quick wins, and exact-query cannibalization signals.
-
-## Examples
-
-The `examples/` directory includes source configuration, source-aware CSV samples, a combined report, and a migration-opportunities file.
+Entries are deduplicated with `sourceId + query + page`.
 
 ## Development
 

@@ -1,7 +1,39 @@
+# Dependencies
 node_modules/
+
+# Build and coverage output
 dist/
+coverage/
+
+# Local environment and credentials
 .env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+*.p8
+*.p12
+*credentials*.json
+*credential*.json
+*service-account*.json
+*service_account*.json
+secrets/
+
+# Local Google Search Console / Obsidian exports if the vault is inside the repo
+SEO/
+data/
+exports/
+reports/
+
+# OS and editor files
 .DS_Store
+.idea/
+.vscode/
+
+# Package manager noise
 package-lock.json
 npm-debug.log*
 pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
