@@ -51,10 +51,10 @@ export function writeCombinedAnalysis(
       "## Cross-source ranking opportunities",
       renderRows(rows.slice(0, 50)),
       "",
-      "## Queries shared by main and blog sources",
+      "## Queries shared by main and content sources",
       sharedQueries.length
         ? sharedQueries.map((item) => `- ${item}`).join("\n")
-        : "_No shared main/blog queries found._",
+        : "_No shared main/content queries found._",
       "",
       "## Cannibalization signals",
       cannibalization.length ? cannibalization.map((item) => `- ${item}`).join("\n") : "_No cross-source overlaps found._",
@@ -138,7 +138,7 @@ function buildMigrationEntries(rows: GscDataRow[]): IdeaEntry[] {
       query: row.query ?? "",
       page: row.page ?? "",
       whyItMatters: `${integer(row.impressions)} legacy impressions at average position ${row.position.toFixed(1)}.`,
-      suggestedIdea: `Map ${row.page} to the best current Apelr destination, or recreate a page for "${row.query}" before adding a redirect.`,
+      suggestedIdea: `Map ${row.page} to the best current destination, or recreate a page for "${row.query}" before adding a redirect.`,
       priority: row.impressions >= 1_000 ? "High" : row.impressions >= 250 ? "Medium" : "Low",
       source: "Legacy migration analysis",
       clicks: row.clicks,

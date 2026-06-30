@@ -9,7 +9,7 @@ export type DatasetName =
   | "date-query-page";
 
 export type RunKind = "daily" | "range" | "yearly";
-export type GscSourceType = "main" | "blog" | "legacy";
+export type GscSourceType = string;
 export type GscFilterOperator =
   | "contains"
   | "equals"
@@ -33,7 +33,6 @@ export interface GscSource {
 
 export interface AppConfig {
   obsidianVaultPath: string;
-  gscSiteUrl?: string;
   googleApplicationCredentials: string;
   defaultLookbackDays: number;
 }

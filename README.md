@@ -2,21 +2,11 @@
 
 Export Google Search Console data into an Obsidian SEO knowledge base with CSV datasets, Markdown reports, and AI-ready content-idea files.
 
-## Public Safety
-
-This repository is intended to be safe to publish publicly when credentials stay outside git.
-
-- Keep `.env` local. It is ignored by `.gitignore`.
-- Keep Google service-account JSON files outside the repository. Common credential filename patterns are ignored as a backup.
-- Do not commit generated Search Console exports. `SEO/`, `data/`, `exports/`, and `reports/` are ignored in case an Obsidian vault or export folder is placed inside the repo.
-- Use `.env.example` as the only committed environment file.
-- Review `src/config/sources.ts` before publishing if source names, domains, or brand spellings are sensitive for your use case.
-
 ## Prerequisites
 
 - Node.js 20 or newer
 - pnpm
-- A Google Cloud service account with read access to the Search Console properties you configure
+- A Google Cloud service account with read access to your Search Console properties
 - An Obsidian vault path for generated reports and datasets
 
 ## Setup
@@ -24,6 +14,7 @@ This repository is intended to be safe to publish publicly when credentials stay
 ```bash
 pnpm install
 cp .env.example .env
+cp gsc-sources.example.json gsc-sources.json
 ```
 
 Fill in `.env`:
@@ -34,26 +25,31 @@ GOOGLE_APPLICATION_CREDENTIALS=/absolute/path/to/google-service-account.json
 DEFAULT_LOOKBACK_DAYS=3
 ```
 
-`GSC_SITE_URL` is still accepted for compatibility with older `.env` files, but `src/config/sources.ts` is the preferred place to configure Search Console properties.
+The CLI reads source definitions from `gsc-sources.json` in the project root. Set `GSC_SOURCES_CONFIG` if you want to keep that file somewhere else.
 
 ## Sources
 
-Configure Search Console properties in `src/config/sources.ts`:
+Configure Search Console properties in `gsc-sources.json`:
 
-```ts
-export const gscSources = [
-  {
-    id: "main-site",
-    label: "Main Site",
-    siteUrl: "sc-domain:example.com",
-    type: "main",
-    enabled: true,
-    brandQueryRegex: String.raw`\b(?:example|example brand)\b`,
-    pageFilters: [
-      { operator: "notContains", expression: "https://blog.example.com/" },
-    ],
-  },
-];
+```json
+{
+  "sources": [
+    {
+      "id": "main-site",
+      "label": "Main Site",
+      "siteUrl": "sc-domain:example.com",
+      "type": "main",
+      "enabled": true,
+      "brandQueryRegex": "\\b(?:example|example brand)\\b",
+      "pageFilters": [
+        {
+          "operator": "notContains",
+          "expression": "https://blog.example.com/"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 Use the exact property identifier shown in Search Console:
@@ -62,6 +58,8 @@ Use the exact property identifier shown in Search Console:
 - URL-prefix properties use a complete prefix such as `https://blog.example.com/`, including the protocol and trailing slash when that is how the property is registered.
 
 `brandQueryRegex` is applied locally and case-insensitively. Complete raw data is retained, while derived files prefixed with `non-branded-` exclude matching queries.
+
+`type` is a free-form source label written to exported CSVs. The built-in combined analysis gives extra treatment to `main`, `blog`, and `legacy`; other values still work as source labels.
 
 ## Commands
 
@@ -74,21 +72,21 @@ pnpm run gsc:verify
 Pull Search Console data:
 
 ```bash
-pnpm run gsc:pull -- --source apelr
+pnpm run gsc:pull -- --source main-site
 pnpm run gsc:pull -- --all
 pnpm run gsc:pull -- --all --last-days 7
-pnpm run gsc:pull -- --source old-domain --from 2026-03-01 --to 2026-06-20
-pnpm run gsc:pull -- --source apelr --date 2026-06-20
+pnpm run gsc:pull -- --source main-site --from 2026-03-01 --to 2026-06-20
+pnpm run gsc:pull -- --source main-site --date 2026-06-20
 ```
 
-Without `--source` or `--all`, the CLI defaults to the `apelr` source currently configured in this repository. If you rename sources in `src/config/sources.ts`, use your own source ids in these commands.
+Without `--source` or `--all`, the CLI uses the first enabled source in `gsc-sources.json`.
 
 Ranges are requested from Search Console one day at a time. Each day gets its own raw files and report, and the complete range also gets an aggregated snapshot.
 
 Analyze already stored data without calling Google:
 
 ```bash
-pnpm run gsc:analyze -- --source apelr
+pnpm run gsc:analyze -- --source main-site
 pnpm run gsc:analyze -- --all
 pnpm run gsc:analyze -- --from 2026-06-01 --to 2026-06-20
 ```

@@ -9,6 +9,9 @@ coverage/
 .env
 .env.*
 !.env.example
+gsc-sources.json
+gsc-sources.*.json
+!gsc-sources.example.json
 *.local
 *.pem
 *.key
@@ -18,7 +21,6 @@ coverage/
 *credential*.json
 *service-account*.json
 *service_account*.json
-secrets/
 
 # Local Google Search Console / Obsidian exports if the vault is inside the repo
 SEO/

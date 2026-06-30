@@ -1,5 +1,5 @@
 import path from "node:path";
-import { gscSources, getSource } from "./config/sources";
+import { getDefaultSource, getGscSources, getSource } from "./config/sources";
 import { loadStorageConfig } from "./config/env";
 import { DATASETS, aggregateDailyDatasets } from "./gsc/fetchSearchAnalytics";
 import { writeCombinedAnalysis } from "./reports/combinedAnalysis";
@@ -18,8 +18,8 @@ function main(): void {
     const sources = args.sourceId
       ? [getSource(args.sourceId)]
       : args.all
-        ? gscSources
-        : [getSource("apelr")];
+        ? getGscSources()
+        : [getDefaultSource()];
     const reports: ReportData[] = [];
     const usedDates = new Set<string>();
 

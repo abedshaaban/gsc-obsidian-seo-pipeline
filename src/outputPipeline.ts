@@ -1,4 +1,4 @@
-import { gscSources } from "./config/sources";
+import { getGscSources } from "./config/sources";
 import { exportDatasetsToCsv } from "./exporters/csvExporter";
 import { writeCombinedAnalysis } from "./reports/combinedAnalysis";
 import {
@@ -59,7 +59,7 @@ export async function rebuildYearlyOutputs(
       datasets: GscDatasetResults;
     }> = [];
 
-    for (const source of gscSources) {
+    for (const source of getGscSources()) {
       const datasets = loadYearlyDatasets(vaultPath, source, year);
       if (!datasets) {
         continue;

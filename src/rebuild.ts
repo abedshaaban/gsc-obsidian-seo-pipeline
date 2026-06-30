@@ -1,4 +1,4 @@
-import { gscSources, validateSource } from "./config/sources";
+import { getGscSources, validateSource } from "./config/sources";
 import { loadStorageConfig } from "./config/env";
 import { rebuildYearlyOutputs } from "./outputPipeline";
 import { listStoredDailyDates } from "./storage/yearlyDatasets";
@@ -6,6 +6,7 @@ import { listStoredDailyDates } from "./storage/yearlyDatasets";
 async function main(): Promise<void> {
   try {
     const config = loadStorageConfig();
+    const gscSources = getGscSources();
     gscSources.forEach(validateSource);
     const years = [
       ...new Set(

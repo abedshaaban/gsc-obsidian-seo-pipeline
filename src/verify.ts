@@ -1,10 +1,11 @@
-import { gscSources, validateSource } from "./config/sources";
+import { getGscSources, validateSource } from "./config/sources";
 import { loadConfig } from "./config/env";
 import { createGscClient } from "./gsc/gscClient";
 
 async function main(): Promise<void> {
   try {
     const config = loadConfig();
+    const gscSources = getGscSources();
     gscSources.forEach(validateSource);
     const client = await createGscClient(config.googleApplicationCredentials);
     const response = await client.sites.list();

@@ -1,0 +1,32 @@
+{
+  "sources": [
+    {
+      "id": "main-site",
+      "label": "Main Site",
+      "siteUrl": "sc-domain:example.com",
+      "type": "main",
+      "enabled": true,
+      "brandQueryRegex": "\\b(?:example|example brand)\\b",
+      "pageFilters": [
+        {
+          "operator": "notContains",
+          "expression": "https://blog.example.com/"
+        }
+      ]
+    },
+    {
+      "id": "content-site",
+      "label": "Content Site",
+      "siteUrl": "sc-domain:example.com",
+      "type": "blog",
+      "enabled": false,
+      "brandQueryRegex": "\\b(?:example|example brand)\\b",
+      "pageFilters": [
+        {
+          "operator": "contains",
+          "expression": "https://blog.example.com/"
+        }
+      ]
+    }
+  ]
+}

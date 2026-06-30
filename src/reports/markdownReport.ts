@@ -167,12 +167,12 @@ function buildWhyItMatters(row: GscDataRow): string {
 function buildSuggestedIdea(row: GscDataRow, source: GscSource): string {
   const query = row.query ?? "this query";
   if (source.type === "blog") {
-    return `Update or create an informational post for "${query}" and add a relevant internal link to an Apelr exam or document page.`;
+    return `Update or create an informational post for "${query}" and add a relevant internal link to a relevant primary page.`;
   }
   if (source.type === "legacy") {
-    return `Evaluate "${query}" for a redirect, migration, or replacement page on the current Apelr domain.`;
+    return `Evaluate "${query}" for a redirect, migration, or replacement page on the current primary domain.`;
   }
-  return `Improve the exam or landing page for "${query}", including its title and links from relevant blog content.`;
+  return `Improve the primary landing page for "${query}", including its title and links from relevant supporting content.`;
 }
 
 function getPriority(row: GscDataRow): IdeaEntry["priority"] {
@@ -191,21 +191,21 @@ function sourceRecommendations(sourceType: GscSource["type"]): string[] {
   if (sourceType === "blog") {
     return [
       "Prioritize informational queries and useful blog post ideas.",
-      "Link relevant posts to Apelr main exam and document pages.",
+      "Link relevant posts to primary product, service, or conversion pages.",
       "Update existing posts that already have ranking traction.",
     ];
   }
   if (sourceType === "legacy") {
     return [
       "Identify redirect and migration opportunities.",
-      "Find old pages that deserve replacement pages on Apelr.",
+      "Find old pages that deserve replacement pages on the current primary domain.",
       "Preserve keywords that remain valuable on the legacy domain.",
     ];
   }
   return [
-    "Prioritize exam and high-intent landing pages.",
+    "Prioritize high-intent landing pages.",
     "Improve titles on high-impression pages with low CTR.",
-    "Add internal links from relevant blog posts to main pages.",
+    "Add internal links from relevant supporting content to primary pages.",
     "Create focused landing pages where valuable queries do not have a strong destination.",
   ];
 }

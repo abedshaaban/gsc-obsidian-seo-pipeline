@@ -1,4 +1,4 @@
-import { gscSources, getSource, validateSource } from "./config/sources";
+import { getDefaultSource, getGscSources, getSource, validateSource } from "./config/sources";
 import { loadConfig } from "./config/env";
 import {
   aggregateDailyDatasets,
@@ -38,13 +38,13 @@ function selectSources(sourceId: string | undefined, all: boolean): GscSource[] 
     return [getSource(sourceId)];
   }
   if (all) {
-    const enabled = gscSources.filter((source) => source.enabled);
+    const enabled = getGscSources().filter((source) => source.enabled);
     if (enabled.length === 0) {
       throw new Error("No enabled GSC sources are configured.");
     }
     return enabled;
   }
-  return [getSource("apelr")];
+  return [getDefaultSource()];
 }
 
 async function pullSource(
