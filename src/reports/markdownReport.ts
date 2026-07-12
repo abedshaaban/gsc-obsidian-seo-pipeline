@@ -68,7 +68,7 @@ export function writeMarkdownReport(report: ReportData, reportPath: string): voi
 
 export function renderMarkdownReport(report: ReportData): string {
   return [
-    `# GSC Report — ${report.source.label} — ${report.titleDate}`,
+    `# ${report.source.engine === "bing" ? "Bing Webmaster Tools" : "GSC"} Report — ${report.source.label} — ${report.titleDate}`,
     "",
     "## Summary",
     `- Total clicks: ${formatInteger(report.summary.totalClicks)}`,

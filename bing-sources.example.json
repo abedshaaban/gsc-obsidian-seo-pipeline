@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "id": "main-site",
+      "label": "Main Site",
+      "siteUrl": "https://example.com/",
+      "type": "main",
+      "enabled": true,
+      "brandQueryRegex": "\\b(?:example|example brand)\\b"
+    }
+  ]
+}

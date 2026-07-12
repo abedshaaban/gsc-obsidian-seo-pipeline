@@ -33,7 +33,7 @@ export function writeCombinedAnalysis(
   fs.writeFileSync(
     reportPath,
     [
-      `# Combined GSC Report — ${label}`,
+      `# Combined ${reports[0]?.source.engine === "bing" ? "Bing Webmaster Tools" : "GSC"} Report — ${label}`,
       "",
       `Sources: ${reports.map((report) => report.source.label).join(", ")}`,
       "",

@@ -1,6 +1,6 @@
-# gsc-obsidian-seo-pipeline
+# Google Search Console + Bing Webmaster Tools → Obsidian SEO Pipeline
 
-Export Google Search Console data into an Obsidian SEO knowledge base with CSV datasets, Markdown reports, and AI-ready content-idea files.
+Export Google Search Console and Bing Webmaster Tools data into an Obsidian SEO knowledge base with CSV datasets, Markdown reports, and AI-ready content-idea files. The engines are stored separately under `SEO/GSC/` and `SEO/Bing/`, and every CSV includes an `engine` column.
 
 ![Google Search Console to Obsidian SEO pipeline](docs/assets/gsc-obsidian-seo-pipeline.png)
 
@@ -18,6 +18,7 @@ This CLI turns Search Console exports into a repeatable SEO research workflow:
 - Node.js 20 or newer
 - pnpm
 - A Google Cloud service account with read access to your Search Console properties
+- Optional: a Bing Webmaster Tools API key with access to verified sites
 - An Obsidian vault path for generated reports and datasets
 
 ## Setup
@@ -26,7 +27,13 @@ This CLI turns Search Console exports into a repeatable SEO research workflow:
 pnpm install
 cp .env.example .env
 cp gsc-sources.example.json gsc-sources.json
+cp bing-sources.example.json bing-sources.json
 ```
+
+`.env`, `gsc-sources.json`, and `bing-sources.json` are local-only files and are
+ignored by Git. Never put real API keys, credential paths, property details, or
+site-specific source configuration into the committed example files. Keep the
+example files populated with placeholders so other users can copy them safely.
 
 Fill in `.env`:
 
@@ -37,6 +44,37 @@ DEFAULT_LOOKBACK_DAYS=3
 ```
 
 The CLI reads source definitions from `gsc-sources.json` in the project root. Set `GSC_SOURCES_CONFIG` if you want to keep that file somewhere else.
+
+## Bing Webmaster Tools
+
+In Bing Webmaster Tools, add and verify each site, then generate an API key from
+**Settings → API Access**. Add it to `.env` without committing the file:
+
+```bash
+BING_WEBMASTER_API_KEY=your-api-key
+```
+
+The real API key belongs only in your ignored `.env` file. Configure verified
+site URLs in the ignored `bing-sources.json`; `bing-sources.example.json` is the
+safe, committed setup template.
+
+Use the exact HTTP(S) site URL registered with Bing (Bing does not use Google's
+`sc-domain:` property syntax), then verify and pull it:
+
+```bash
+pnpm bing:verify
+pnpm bing:pull -- --source main-site --last-days 30
+# or all enabled Bing sources
+pnpm bing:pull -- --all --last-days 30
+```
+
+Bing exposes top query, top page, and page-to-query statistics rather than GSC's
+arbitrary dimension query. This pipeline fetches the available history once,
+filters it to the requested dates, and writes compatible daily/range/yearly
+outputs. `query-page-country.csv` and `query-page-device.csv` are intentionally
+empty because Bing does not provide those dimensions through these endpoints.
+Bing documents these statistics as updating weekly, so recent dates may have no
+rows; empty outputs are retained as an audit trail.
 
 ## Sources
 

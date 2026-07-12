@@ -40,8 +40,9 @@ export function buildOutputPaths(
   sourceId: string,
   kind: "daily" | "range" | "yearly",
   label: string,
+  engine: "GSC" | "Bing" = "GSC",
 ) {
-  const gscRoot = path.join(vaultPath, "SEO", "GSC", "sources", sourceId);
+  const gscRoot = path.join(vaultPath, "SEO", engine, "sources", sourceId);
   const rawDir =
     kind === "daily"
       ? path.join(gscRoot, "raw", "daily", label)
@@ -62,14 +63,14 @@ export function buildOutputPaths(
   };
 }
 
-export function buildCombinedPaths(vaultPath: string): { reportsDir: string; ideasDir: string } {
-  const root = path.join(vaultPath, "SEO", "GSC", "combined");
+export function buildCombinedPaths(vaultPath: string, engine: "GSC" | "Bing" = "GSC"): { reportsDir: string; ideasDir: string } {
+  const root = path.join(vaultPath, "SEO", engine, "combined");
   return {
     reportsDir: path.join(root, "reports"),
     ideasDir: path.join(root, "ideas"),
   };
 }
 
-export function buildCombinedYearlyRawDir(vaultPath: string, year: string): string {
-  return path.join(vaultPath, "SEO", "GSC", "combined", "raw", "yearly", year);
+export function buildCombinedYearlyRawDir(vaultPath: string, year: string, engine: "GSC" | "Bing" = "GSC"): string {
+  return path.join(vaultPath, "SEO", engine, "combined", "raw", "yearly", year);
 }

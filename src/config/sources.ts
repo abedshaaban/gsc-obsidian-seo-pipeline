@@ -138,6 +138,7 @@ function normalizeSource(value: unknown): GscSource {
 
   const pageFilters = value.pageFilters;
   return {
+    engine: "google",
     id: readString(value, "id"),
     label: readString(value, "label"),
     siteUrl: readString(value, "siteUrl"),

@@ -25,7 +25,8 @@ export async function writeOutputs(
   kind: RunKind,
   label: string,
 ): Promise<void> {
-  const outputPaths = buildOutputPaths(vaultPath, source.id, kind, label);
+  const engineRoot = source.engine === "bing" ? "Bing" : "GSC";
+  const outputPaths = buildOutputPaths(vaultPath, source.id, kind, label, engineRoot);
   const totalRows = Object.values(datasets).reduce(
     (sum, rows) => sum + rows.length,
     0,
@@ -98,5 +99,37 @@ export async function rebuildYearlyOutputs(
       combinedPaths.ideasDir,
     );
     console.log(`  Rebuilt combined yearly dataset for ${year}`);
+  }
+}
+
+export async function rebuildEngineYearlyOutputs(
+  vaultPath: string,
+  years: string[],
+  sources: GscSource[],
+): Promise<void> {
+  const engineRoot = sources[0]?.engine === "bing" ? "Bing" : "GSC";
+  for (const year of years) {
+    const available: Array<{ source: GscSource; datasets: GscDatasetResults }> = [];
+    for (const source of sources) {
+      const datasets = loadYearlyDatasets(vaultPath, source, year, engineRoot);
+      if (!datasets) continue;
+      available.push({ source, datasets });
+      await writeOutputs(source, datasets, vaultPath, "yearly", year);
+    }
+    if (!available.length) continue;
+    const combined = mergeSourceDatasets(available.map(({ datasets }) => datasets));
+    const nonBranded = mergeSourceDatasets(
+      available.map(({ source, datasets }) => buildNonBrandedDatasets(datasets, source)),
+    );
+    const rawDir = buildCombinedYearlyRawDir(vaultPath, year, engineRoot);
+    await exportDatasetsToCsv(combined, rawDir);
+    await exportDatasetsToCsv(nonBranded, rawDir, "non-branded-");
+    const paths = buildCombinedPaths(vaultPath, engineRoot);
+    writeCombinedAnalysis(
+      available.map(({ source, datasets }) => buildReportData(datasets, year, source)),
+      year,
+      paths.reportsDir,
+      paths.ideasDir,
+    );
   }
 }

@@ -5,6 +5,7 @@ import { GscDataRow, GscDatasetResults } from "../types";
 import { ensureDirectory } from "../utils/fileUtils";
 
 const CSV_HEADERS = [
+  { id: "engine", title: "engine" },
   { id: "sourceId", title: "sourceId" },
   { id: "sourceLabel", title: "sourceLabel" },
   { id: "sourceType", title: "sourceType" },
@@ -50,6 +51,7 @@ async function writeCsv(filePath: string, rows: GscDataRow[]): Promise<void> {
 
 function toCsvRecord(row: GscDataRow): Record<string, string | number> {
   return {
+    engine: row.engine,
     sourceId: row.sourceId,
     sourceLabel: row.sourceLabel,
     sourceType: row.sourceType,

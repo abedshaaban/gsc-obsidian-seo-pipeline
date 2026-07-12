@@ -8,8 +8,9 @@ export function loadYearlyDatasets(
   vaultPath: string,
   source: GscSource,
   year: string,
+  engine: "GSC" | "Bing" = "GSC",
 ): GscDatasetResults | undefined {
-  const dates = listStoredDailyDates(vaultPath, source.id).filter((date) =>
+  const dates = listStoredDailyDates(vaultPath, source.id, engine).filter((date) =>
     date.startsWith(`${year}-`),
   );
   if (dates.length === 0) {
@@ -17,7 +18,7 @@ export function loadYearlyDatasets(
   }
 
   const daily = dates.map((date) =>
-    readDailyDatasets(vaultPath, source.id, date),
+    readDailyDatasets(vaultPath, source.id, date, engine),
   );
   return aggregateDailyDatasets(daily, dates[0], dates[dates.length - 1]);
 }
@@ -25,11 +26,12 @@ export function loadYearlyDatasets(
 export function listStoredDailyDates(
   vaultPath: string,
   sourceId: string,
+  engine: "GSC" | "Bing" = "GSC",
 ): string[] {
   const dailyDir = path.join(
     vaultPath,
     "SEO",
-    "GSC",
+    engine,
     "sources",
     sourceId,
     "raw",
@@ -63,12 +65,13 @@ function readDailyDatasets(
   vaultPath: string,
   sourceId: string,
   date: string,
+  engine: "GSC" | "Bing" = "GSC",
 ): GscDatasetResults {
   const result = {} as GscDatasetResults;
   const dailyDir = path.join(
     vaultPath,
     "SEO",
-    "GSC",
+    engine,
     "sources",
     sourceId,
     "raw",

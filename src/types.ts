@@ -9,6 +9,7 @@ export type DatasetName =
   | "date-query-page";
 
 export type RunKind = "daily" | "range" | "yearly";
+export type SearchEngine = "google" | "bing";
 export type GscSourceType = string;
 export type GscFilterOperator =
   | "contains"
@@ -22,6 +23,7 @@ export interface GscPageFilter {
 }
 
 export interface GscSource {
+  engine: SearchEngine;
   id: string;
   label: string;
   siteUrl: string;
@@ -54,6 +56,7 @@ export interface GscDatasetConfig {
 }
 
 export interface GscDataRow {
+  engine: SearchEngine;
   sourceId: string;
   sourceLabel: string;
   sourceType: GscSourceType;

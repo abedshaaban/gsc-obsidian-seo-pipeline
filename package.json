@@ -1,7 +1,7 @@
 {
   "name": "gsc-obsidian-seo-pipeline",
   "version": "1.0.0",
-  "description": "Export Google Search Console data into an Obsidian SEO knowledge base with CSV exports, Markdown reports, and AI-ready blog idea files.",
+  "description": "Export Google Search Console and Bing Webmaster Tools data into an Obsidian SEO knowledge base.",
   "private": true,
   "packageManager": "pnpm@10.18.2",
   "main": "dist/cli.js",
@@ -10,6 +10,8 @@
     "gsc:analyze": "tsx src/analyze.ts",
     "gsc:rebuild": "tsx src/rebuild.ts",
     "gsc:verify": "tsx src/verify.ts",
+    "bing:pull": "tsx src/bingCli.ts",
+    "bing:verify": "tsx src/bingVerify.ts",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },

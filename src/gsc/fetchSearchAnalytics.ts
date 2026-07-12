@@ -132,6 +132,7 @@ function normalizeRow(
 ): GscDataRow {
   const keys = row.keys ?? [];
   const normalized: GscDataRow = {
+    engine: "google",
     sourceId: source.id,
     sourceLabel: source.label,
     sourceType: source.type,

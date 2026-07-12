@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { GscDataRow, GscSourceType } from "../types";
+import { GscDataRow, GscSourceType, SearchEngine } from "../types";
 
 export function readGscCsv(filePath: string): GscDataRow[] {
   if (!fs.existsSync(filePath)) {
@@ -13,6 +13,7 @@ export function readGscCsv(filePath: string): GscDataRow[] {
   return records.slice(1).filter((values) => values.some(Boolean)).map((values) => {
     const record = Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""]));
     return {
+      engine: (record.engine || "google") as SearchEngine,
       sourceId: record.sourceId,
       sourceLabel: record.sourceLabel,
       sourceType: record.sourceType as GscSourceType,

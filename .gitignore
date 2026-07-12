@@ -12,6 +12,9 @@ coverage/
 gsc-sources.json
 gsc-sources.*.json
 !gsc-sources.example.json
+bing-sources.json
+bing-sources.*.json
+!bing-sources.example.json
 *.local
 *.pem
 *.key
