@@ -12,7 +12,7 @@ export async function fetchBingAnalytics(
     client.get<BingStat[]>("GetPageStats", { siteUrl: source.siteUrl }),
   ]);
   const selectedPages = [...new Set(pages.map((row) => row.Query).filter((value): value is string => Boolean(value)))];
-  const pageQueries = await mapConcurrent(selectedPages, 5, async (page) => ({
+  const pageQueries = await mapConcurrent(selectedPages, 1, async (page) => ({
     page,
     rows: await client.get<BingStat[]>("GetPageQueryStats", { siteUrl: source.siteUrl, page }),
   }));
